@@ -1,0 +1,82 @@
+<settings xmlns="http://maven.apache.org/SETTINGS/1.2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.2.0 https://maven.apache.org/xsd/settings-1.2.0.xsd">
+  <servers>
+    <!-- private-nexus3-maven -->
+    <server>
+      <id>private-nexus3-maven</id>
+      <username>${env.PRIVATE_NEXUS3_MAVEN_DEPLOY_USERNAME}</username>
+      <password>${env.PRIVATE_NEXUS3_MAVEN_DEPLOY_PASSWORD}</password>
+    </server>
+    <!-- private-nexus3-maven-releases -->
+    <server>
+      <id>private-nexus3-maven-releases</id>
+      <username>${env.PRIVATE_NEXUS3_MAVEN_DEPLOY_USERNAME}</username>
+      <password>${env.PRIVATE_NEXUS3_MAVEN_DEPLOY_PASSWORD}</password>
+    </server>
+    <!-- private-nexus3-maven-snapshots -->
+    <server>
+      <id>private-nexus3-maven-snapshots</id>
+      <username>${env.PRIVATE_NEXUS3_MAVEN_DEPLOY_USERNAME}</username>
+      <password>${env.PRIVATE_NEXUS3_MAVEN_DEPLOY_PASSWORD}</password>
+    </server>
+    <!-- private-gitlab-maven -->
+    <server>
+      <id>private-gitlab-maven</id>
+      <configuration>
+        <httpHeaders>
+          <property>
+            <name>Job-Token</name>
+            <value>${env.CI_JOB_TOKEN}</value>
+          </property>
+        </httpHeaders>
+      </configuration>
+    </server>
+    <!-- ci-gitlab-maven -->
+    <server>
+      <id>ci-gitlab-maven</id>
+      <configuration>
+        <httpHeaders>
+          <property>
+            <name>Job-Token</name>
+            <value>${env.CI_JOB_TOKEN}</value>
+          </property>
+        </httpHeaders>
+      </configuration>
+    </server>
+  </servers>
+  <mirrors>
+    <!-- dummy -->
+    <mirror>
+      <id>maven-default-http-blocker</id>
+      <mirrorOf>external:dummy:*</mirrorOf>
+      <name>Pseudo repository to mirror external repositories initially using HTTP.</name>
+      <url>http://0.0.0.0/</url>
+      <blocked>true</blocked>
+    </mirror>
+    <!-- private-nexus3-maven -->
+    <mirror>
+      <id>private-nexus3-maven</id>
+      <mirrorOf>central</mirrorOf>
+      <name>private-nexus3-maven</name>
+      <url>http://nexus.sprouts.kr/repository/maven-public/</url>
+      <blocked>false</blocked>
+    </mirror>
+    <!-- private-nexus3-maven-releases -->
+    <mirror>
+      <id>private-nexus3-maven-releases</id>
+      <mirrorOf>releases</mirrorOf>
+      <name>private-nexus</name>
+      <url>http://nexus.sprouts.kr/repository/maven-releases/</url>
+      <blocked>false</blocked>
+    </mirror>
+    <!-- private-nexus3-maven-snapshots -->
+    <mirror>
+      <id>private-nexus3-maven</id>
+      <mirrorOf>snapshots</mirrorOf>
+      <name>private-nexus3-maven</name>
+      <url>http://nexus.sprouts.kr/repository/maven-snapshots/</url>
+      <blocked>false</blocked>
+    </mirror>
+  </mirrors>
+</settings>
