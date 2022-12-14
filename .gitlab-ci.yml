@@ -1,0 +1,62 @@
+variables:
+  MAVEN_OPTS: "-Dhttps.protocols=TLSv1.2 -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=INFO -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
+  MAVEN_CLI_OPTS: "-s .gitlab-ci-mvn-settings.xml --batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
+cache:
+  paths:
+    - .m2/repository
+    - target/
+
+stages:
+  - sast
+  - maven-build
+  - maven-test
+  - maven-deploy
+
+sast:
+  stage: sast
+include:
+  - template: Security/SAST.gitlab-ci.yml
+
+maven-build:
+  image: maven:3.8.6-openjdk-11-slim
+  stage: maven-build
+  script:
+    - mvn $MAVEN_CLI_OPTS clean package -DskipTests
+  artifacts:
+    paths:
+      - target/*.jar
+    expire_in: 10 min
+  retry:
+    max: 2
+    when: script_failure
+
+maven-test:
+  image: maven:3.8.6-openjdk-11-slim
+  stage: maven-test
+  script:
+    - mvn $MAVEN_CLI_OPTS test
+  retry:
+    max: 2
+    when: script_failure
+
+maven-deploy-private-gitlab-package-registry:
+  image: maven:3.8.6-openjdk-11-slim
+  stage: maven-deploy
+  script:
+    - mvn $MAVEN_CLI_OPTS clean deploy -P private-gitlab-deploy
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^[0-9]+\.+[0-9]+\.+[x]$/ && $PRIVATE_GITLAB_MAVEN_DEPLOY == "true"'
+  retry:
+    max: 2
+    when: script_failure
+
+maven-deploy-private-nexus-repository:
+  image: maven:3.8.6-openjdk-11-slim
+  stage: maven-deploy
+  script:
+    - mvn $MAVEN_CLI_OPTS clean deploy -P private-nexus3-deploy
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^[0-9]+\.+[0-9]+\.+[x]$/ && $PRIVATE_NEXUS3_MAVEN_DEPLOY == "true"'
+  retry:
+    max: 2
+    when: script_failure
