@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>kr.sprouts.autoconfigure</groupId>
 	<artifactId>sprouts-jwt-parser-spring-boot-starter</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.2</version>
 	<name>sprouts-jwt-parser-spring-boot-starter</name>
 	<description>Sprouts java json web token parser autoconfigure</description>
 	<properties>
@@ -85,7 +85,7 @@
 		<dependency>
 			<groupId>kr.sprouts.autoconfigure</groupId>
 			<artifactId>sprouts-jwt-helper-spring-boot-starter</artifactId>
-			<version>0.0.2-SNAPSHOT</version>
+			<version>0.0.2</version>
 		</dependency>
 
 		<!-- Logging -->
