@@ -15,7 +15,6 @@ class JwtParserConfigurationTest {
     public void bean_test() {
         this.applicationContextRunner.run(
                 context -> {
-                    assertThat(context).hasSingleBean(JwtHelperConfiguration.class);
                     assertThat(context).hasSingleBean(JwtParserConfiguration.class);
                 }
         );
