@@ -1,19 +1,12 @@
-package kr.sprouts.autoconfigure.components;
+package kr.sprouts.autoconfigure.utilities;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 
 import java.security.Key;
 
 public class JwtParser {
-    private final Logger logger = LoggerFactory.getLogger(JwtParser.class);
-
-    public JwtParser() {
-        this.logger.info(String.format("Initialized %s", JwtParser.class.getName()));
-    }
 
     public static Claims claims(@NonNull String requireIssuer, @NonNull String requireSubject, @NonNull String requireAudience, @NonNull Key key, @NonNull String claimsJws) {
         return Jwts.parserBuilder()
@@ -31,7 +24,7 @@ public class JwtParser {
                 requireIssuer,
                 requireSubject,
                 requireAudience,
-                JwtHelper.convertToKey(base64UrlEncodedSecret),
+                JwtHelper.convertToSecretKey(base64UrlEncodedSecret),
                 claimsJws
         );
     }
@@ -44,9 +37,9 @@ public class JwtParser {
                 .getBody();
     }
 
-    public static Claims claims(@NonNull String base64UrlEncodedSecret, String claimsJws) {
+    public static Claims claims(@NonNull String base64UrlEncodedSecret, @NonNull String claimsJws) {
         return JwtParser.claims(
-                JwtHelper.convertToKey(base64UrlEncodedSecret),
+                JwtHelper.convertToSecretKey(base64UrlEncodedSecret),
                 claimsJws
         );
     }

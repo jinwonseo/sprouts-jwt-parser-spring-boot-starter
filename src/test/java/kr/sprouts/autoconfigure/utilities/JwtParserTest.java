@@ -1,15 +1,10 @@
-package kr.sprouts.autoconfigure.components;
+package kr.sprouts.autoconfigure.utilities;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import kr.sprouts.autoconfigure.configurations.JwtParserConfiguration;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import java.security.Key;
 import java.security.PrivateKey;
@@ -21,10 +16,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class JwtParserTest {
-    private final ApplicationContextRunner applicationContextRunner
-            = new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(JwtParserConfiguration.class));
 
-    private final Logger logger = LoggerFactory.getLogger(JwtParserTest.class);
+    private static String create(Claims claims, Key key, SignatureAlgorithm signatureAlgorithm) {
+        return Jwts.builder().setClaims(claims).signWith(key, signatureAlgorithm).compact();
+    }
+
+    private static String create(Claims claims, String base64UrlEncodedSecret, SignatureAlgorithm signatureAlgorithm) {
+        return Jwts.builder().setClaims(claims).signWith(JwtHelper.convertToSecretKey(base64UrlEncodedSecret), signatureAlgorithm).compact();
+    }
 
     @Test
     void parse_hs512() {
@@ -45,16 +44,9 @@ class JwtParserTest {
         claims.setIssuedAt(Timestamp.valueOf(currentLocalDateTime));
         claims.setExpiration(Timestamp.valueOf(currentLocalDateTime.plusSeconds(validityInSeconds)));
 
-        String base64UrlEncodedSecret = JwtHelper.base64urlEncodedSecretKeyFor(SignatureAlgorithm.HS512).getValue();
-        Key key = JwtHelper.convertToKey(base64UrlEncodedSecret);
+        String base64UrlEncodedSecret = JwtHelper.base64urlEncodedSecretKeyFor(SignatureAlgorithm.HS512).value();
 
-        String claimsJws = JwtCreator.create(claims, key, SignatureAlgorithm.HS512);
-        Claims parsedClaims =  JwtParser.claims(key, claimsJws);
-
-        logger.info(base64UrlEncodedSecret);
-        logger.info(claimsJws);
-
-        assertThat(claims.getId().equals(parsedClaims.getId())).isTrue();
+        assertThat(JwtParser.claims(base64UrlEncodedSecret, JwtParserTest.create(claims, base64UrlEncodedSecret, SignatureAlgorithm.HS512)).getId().equals(claims.getId())).isTrue();
     }
 
     @Test
@@ -77,9 +69,8 @@ class JwtParserTest {
         claims.setExpiration(Timestamp.valueOf(currentLocalDateTime.plusSeconds(validityInSeconds)));
 
         PrivateKey privateKey = JwtHelper.keyPairFor(SignatureAlgorithm.RS256).getPrivate();
-        String claimsJws = JwtCreator.create(claims, privateKey, SignatureAlgorithm.RS256);
 
-        assertThat(claims.getId().equals(JwtParser.claims(privateKey, claimsJws).getId())).isTrue();
+        assertThat(JwtParser.claims(privateKey, JwtParserTest.create(claims, privateKey, SignatureAlgorithm.RS256)).getId().equals(claims.getId())).isTrue();
     }
 
     @Test
@@ -102,14 +93,10 @@ class JwtParserTest {
         claims.setExpiration(Timestamp.valueOf(currentLocalDateTime.plusSeconds(validityInSeconds)));
 
         PrivateKey privateKey = JwtHelper.keyPairFor(SignatureAlgorithm.RS256).getPrivate();
-        String claimsJws = JwtCreator.create(claims, privateKey, SignatureAlgorithm.RS256);
 
-        try {
+        assertThatThrownBy(() -> {
             Thread.sleep(validityInSeconds * 2000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
-        assertThatThrownBy(() -> JwtParser.claims(privateKey, claimsJws)).isInstanceOf(ExpiredJwtException.class);
+            JwtParser.claims(privateKey, JwtParserTest.create(claims, privateKey, SignatureAlgorithm.RS256));
+        }).isInstanceOf(ExpiredJwtException.class);
     }
 }
