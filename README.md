@@ -12,7 +12,7 @@ Spring boot starter with Java JWT parser.
     <dependency>
       <groupId>kr.sprouts.autoconfigure</groupId>
       <artifactId>sprouts-jwt-parser-spring-boot-starter</artifactId>
-      <version>0.0.2-SNAPSHOT</version>
+      <version>0.0.2</version>
     </dependency>
   </dependencies>
   ```
@@ -20,7 +20,7 @@ Spring boot starter with Java JWT parser.
 * gradle
   ```groovy
   dependencies {
-    implementation 'kr.sprouts.autoconfigure:sprouts-jwt-parser-spring-boot-starter:0.0.2-SNAPSHOT'
+    implementation 'kr.sprouts.autoconfigure:sprouts-jwt-parser-spring-boot-starter:0.0.2'
   }
   ```
 
