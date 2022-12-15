@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>kr.sprouts.autoconfigure</groupId>
 	<artifactId>sprouts-jwt-parser-spring-boot-starter</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<name>sprouts-jwt-parser-spring-boot-starter</name>
 	<description>Sprouts java json web token parser autoconfigure</description>
 	<properties>
@@ -20,8 +20,6 @@
 	<profiles>
 		<profile>
 			<id>private-gitlab-deploy</id>
-			<activation></activation>
-			<properties></properties>
 			<distributionManagement>
 				<repository>
 					<id>ci-gitlab-maven</id>
@@ -35,8 +33,6 @@
 		</profile>
 		<profile>
 			<id>private-nexus3-deploy</id>
-			<activation></activation>
-			<properties></properties>
 			<distributionManagement>
 				<repository>
 					<id>private-nexus3-maven-releases</id>
@@ -89,7 +85,7 @@
 		<dependency>
 			<groupId>kr.sprouts.autoconfigure</groupId>
 			<artifactId>sprouts-jwt-helper-spring-boot-starter</artifactId>
-			<version>0.0.1</version>
+			<version>0.0.2-SNAPSHOT</version>
 		</dependency>
 
 		<!-- Logging -->
@@ -108,14 +104,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<!-- JwtCreator(test) -->
-		<dependency>
-			<groupId>kr.sprouts.autoconfigure</groupId>
-			<artifactId>sprouts-jwt-creator-spring-boot-starter</artifactId>
-			<version>0.0.1</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
